@@ -1,0 +1,76 @@
+<!-- src/app/contacts/contacts.component.html -->
+<div class="container">
+    <h2>Contact List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Gender</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let contact of contacts">
+          <td>{{ contact.name }}</td>
+          <td>{{ contact.phone }}</td>
+          <td>{{ contact.email }}</td>
+          <td>{{ contact.address }}</td>
+          <td>{{ contact.gender }}</td>
+          <td>{{ contact.status }}</td>
+          <td>
+            <button kendoButton (click)="editContact(contact)">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <h2>{{ editMode ? 'Edit Contact' : 'Add Contact' }}</h2>
+    <form [formGroup]="contactForm" (ngSubmit)="editMode ? updateContact() : addContact()">
+      <div>
+        <label for="name">Name*</label>
+        <kendo-textbox id="name" formControlName="name"></kendo-textbox>
+        <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">Name is required</div>
+      </div>
+      <div>
+        <label for="phone">Phone*</label>
+        <kendo-textbox placeholder="XXXXXXXXX" id="phone" formControlName="phone" ></kendo-textbox>
+        <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">Phone is required</div>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <kendo-textbox id="email" formControlName="email" ></kendo-textbox>
+        <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">Invalid email</div>
+      </div>
+      <div>
+        <label for="address">Address</label>
+        <kendo-textbox id="address" formControlName="address" ></kendo-textbox>
+      </div>
+      <div>
+        <label for="gender">Gender*</label>
+
+        <mat-radio-group formControlName="gender">
+            <mat-radio-button value="Male">Male</mat-radio-button>
+            <mat-radio-button value="Female">Female</mat-radio-button>
+        </mat-radio-group>
+        
+        <div *ngIf="contactForm.get('gender')?.invalid && contactForm.get('gender')?.touched">Gender is required</div>
+      </div>
+      <div>
+        <label for="status">Status*</label>
+
+        <mat-radio-group formControlName="status">
+            <mat-radio-button value="On">On</mat-radio-button>
+            <mat-radio-button value="Off">Off</mat-radio-button>
+        </mat-radio-group>
+
+        <div *ngIf="contactForm.get('status')?.invalid && contactForm.get('status')?.touched">Status is required</div>
+      </div>
+      <button type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
+      <button type="button" (click)="cancelEdit()" *ngIf="editMode">Cancel</button>
+    </form>
+  </div>
+  
