@@ -1,7 +1,6 @@
-<!-- src/app/contacts/contacts.component.html -->
-<div class="container">
+   <div class="container">
     <h2>Contact List</h2>
-    <table>
+    <table class="table table-bordered">
       <thead>
         <tr>
           <th>Name</th>
@@ -30,47 +29,61 @@
   
     <h2>{{ editMode ? 'Edit Contact' : 'Add Contact' }}</h2>
     <form [formGroup]="contactForm" (ngSubmit)="editMode ? updateContact() : addContact()">
-      <div>
+      <div class="form-group">
         <label for="name">Name*</label>
-        <kendo-textbox id="name" formControlName="name"></kendo-textbox>
-        <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">Name is required</div>
+        <div>
+          <input kendoTextBox id="name" [formControlName]="'name'" />
+        </div>
+        <div *ngIf="f.name.invalid && f.name.touched" class="alert alert-danger mt-2">Name is required</div>
       </div>
-      <div>
+      <div class="form-group">
         <label for="phone">Phone*</label>
-        <kendo-textbox placeholder="XXXXXXXXX" id="phone" formControlName="phone" ></kendo-textbox>
-        <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">Phone is required</div>
+        <div>
+          <input kendoTextBox placeholder="XXXXXXXXX" id="phone" [formControlName]="'phone'" />
+        </div>
+        <div *ngIf="f.phone.invalid && f.phone.touched" class="alert alert-danger mt-2">Phone is required</div>
       </div>
-      <div>
+      <div class="form-group">
         <label for="email">Email</label>
-        <kendo-textbox id="email" formControlName="email" ></kendo-textbox>
-        <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">Invalid email</div>
+        <div>
+          <input kendoTextBox id="email" [formControlName]="'email'" />
+        </div>
+        <div *ngIf="f.email.invalid && f.email.touched" class="alert alert-danger mt-2">Invalid email</div>
       </div>
-      <div>
+      <div class="form-group">
         <label for="address">Address</label>
-        <kendo-textbox id="address" formControlName="address" ></kendo-textbox>
+        <div>
+          <input kendoTextBox id="address" [formControlName]="'address'" />
+        </div>
       </div>
-      <div>
+      <div class="form-group">
         <label for="gender">Gender*</label>
-
-        <mat-radio-group formControlName="gender">
-            <mat-radio-button value="Male">Male</mat-radio-button>
-            <mat-radio-button value="Female">Female</mat-radio-button>
-        </mat-radio-group>
-        
-        <div *ngIf="contactForm.get('gender')?.invalid && contactForm.get('gender')?.touched">Gender is required</div>
+        <kendo-dropdownlist
+          [data]="genderOptions"
+          [formControlName]="'gender'"
+          [defaultItem]="'Select gender'"
+          [valuePrimitive]="true"
+        ></kendo-dropdownlist>
+        <div *ngIf="f.gender.invalid && f.gender.touched" class="alert alert-danger mt-2">Gender is required</div>
       </div>
-      <div>
+      <div class="form-group">
         <label for="status">Status*</label>
-
-        <mat-radio-group formControlName="status">
-            <mat-radio-button value="On">On</mat-radio-button>
-            <mat-radio-button value="Off">Off</mat-radio-button>
-        </mat-radio-group>
-
-        <div *ngIf="contactForm.get('status')?.invalid && contactForm.get('status')?.touched">Status is required</div>
+        <div>
+          <label>
+            <kendo-radiobutton name="status" value="On" [formControlName]="'status'"></kendo-radiobutton>
+            On
+          </label>
+        </div>
+        <div>
+          <label>
+            <kendo-radiobutton name="status" value="Off" [formControlName]="'status'"></kendo-radiobutton>
+            Off
+          </label>
+        </div>
+        <div *ngIf="f.status.invalid && f.status.touched" class="alert alert-danger mt-2">Status is required</div>
       </div>
-      <button type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
-      <button type="button" (click)="cancelEdit()" *ngIf="editMode">Cancel</button>
+      <button kendoButton type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
+      <button kendoButton type="button" (click)="cancelEdit()" *ngIf="editMode">Cancel</button>
     </form>
   </div>
   
