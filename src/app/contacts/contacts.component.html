@@ -1,33 +1,38 @@
-   <div class="container">
-    <h2>Contact List</h2>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Address</th>
-          <th>Gender</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let contact of contacts">
-          <td>{{ contact.name }}</td>
-          <td>{{ contact.phone }}</td>
-          <td>{{ contact.email }}</td>
-          <td>{{ contact.address }}</td>
-          <td>{{ contact.gender }}</td>
-          <td>{{ contact.status }}</td>
-          <td>
-            <button kendoButton (click)="editContact(contact)">Edit</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <h2>{{ editMode ? 'Edit Contact' : 'Add Contact' }}</h2>
+<div class="container">
+  <h2>Contact List</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Gender</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let contact of contacts">
+        <td>{{ contact.name }}</td>
+        <td>{{ contact.phone }}</td>
+        <td>{{ contact.email }}</td>
+        <td>{{ contact.address }}</td>
+        <td>{{ contact.gender }}</td>
+        <td>{{ contact.status }}</td>
+        <td>
+          <button kendoButton (click)="editContact(contact)">Edit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button kendoButton (click)="showDialog = true">Add Contact</button>
+
+  <kendo-dialog *ngIf="showDialog" (close)="closeDialog()">
+    <kendo-dialog-titlebar>
+      {{ editMode ? 'Edit Contact' : 'Add Contact' }}
+    </kendo-dialog-titlebar>
     <form [formGroup]="contactForm" (ngSubmit)="editMode ? updateContact() : addContact()">
       <div class="form-group">
         <label for="name">Name*</label>
@@ -82,8 +87,10 @@
         </div>
         <div *ngIf="f.status.invalid && f.status.touched" class="alert alert-danger mt-2">Status is required</div>
       </div>
-      <button kendoButton type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
-      <button kendoButton type="button" (click)="cancelEdit()" *ngIf="editMode">Cancel</button>
+      <kendo-dialog-actions>
+        <button kendoButton type="submit">{{ editMode ? 'Update' : 'Add' }}</button>
+        <button kendoButton type="button" (click)="cancelEdit()">Cancel</button>
+      </kendo-dialog-actions>
     </form>
-  </div>
-  
+  </kendo-dialog>
+</div>

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormControl, NonNullableFormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, NonNullableFormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+import { DialogModule, DialogService } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 
 interface Contact {
@@ -34,7 +35,8 @@ interface ContactForm {
     InputsModule,
     ButtonsModule,
     DropDownsModule,
-    RadioButtonModule
+    RadioButtonModule,
+    DialogModule
   ],
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss']
@@ -46,8 +48,9 @@ export class ContactsComponent implements OnInit {
   selectedContact: Contact | null = null;
 
   genderOptions = ['Male', 'Female'];
+  public showDialog = false;
 
-  constructor(private fb: NonNullableFormBuilder) {
+  constructor(private fb: NonNullableFormBuilder, private dialogService: DialogService) {
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
       phone: ['', Validators.required],
@@ -105,6 +108,7 @@ export class ContactsComponent implements OnInit {
     this.editMode = true;
     this.selectedContact = contact;
     this.contactForm.patchValue(contact);
+    this.showDialog = true; // Показать всплывающее окно
   }
 
   updateContact() {
@@ -131,6 +135,7 @@ export class ContactsComponent implements OnInit {
         status: ''
       });
       this.saveContacts();
+      this.showDialog = false; // Скрыть всплывающее окно
     }
   }
 
@@ -145,5 +150,10 @@ export class ContactsComponent implements OnInit {
       gender: '',
       status: ''
     });
+    this.showDialog = false; // Скрыть всплывающее окно
+  }
+
+  closeDialog(){
+    this.cancelEdit();
   }
 }
