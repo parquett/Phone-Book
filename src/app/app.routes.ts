@@ -1,14 +1,16 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { ContactsComponent } from './contacts/contacts.component';
+import { EditContactComponent } from './contacts/edit-contact/edit-contact.component';
+import { NewContactComponent } from './contacts/new-contact/new-contact.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/contacts', pathMatch: 'full' },
-  { path: 'contacts', component: ContactsComponent },
+  {
+    path: 'contacts',
+    component: ContactsComponent,
+    children: [
+      { path: 'edit/:id', component: EditContactComponent },
+      { path: 'new', component: NewContactComponent }
+    ]
+  }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }
