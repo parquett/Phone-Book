@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
 export interface Contact {
   id: number;
@@ -12,29 +13,31 @@ export interface Contact {
 }
 
 export interface ContactForm {
-    name: FormControl<string>;
-    phone: FormControl<string>;
-    email: FormControl<string>;
-    address: FormControl<string | null>;
-    gender: FormControl<string>;
-    status: FormControl<string>;
-  }
+  name: FormControl<string>;
+  phone: FormControl<string>;
+  email: FormControl<string>;
+  address: FormControl<string | null>;
+  gender: FormControl<string>;
+  status: FormControl<string>;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContactsService {
   private contacts: Contact[] = [];
+  private contactsSubject = new BehaviorSubject<Contact[]>([]);
 
   constructor() {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
       this.contacts = JSON.parse(storedContacts);
     }
+    this.contactsSubject.next(this.contacts);
   }
 
-  getContacts(): Contact[] {
-    return this.contacts;
+  getContactsObservable() {
+    return this.contactsSubject.asObservable();
   }
 
   getContactById(id: number): Contact | undefined {
@@ -44,13 +47,15 @@ export class ContactsService {
   addContact(newContact: Contact) {
     this.contacts.push(newContact);
     this.saveContacts();
+    this.contactsSubject.next(this.contacts);
   }
 
-  updateContact(id: number, updatedContact: Partial<Contact>) {
-    const contact = this.getContactById(id);
-    if (contact) {
-      Object.assign(contact, updatedContact);
+  updateContact(id: number, updatedContact: Contact) {
+    const index = this.contacts.findIndex(contact => contact.id === id);
+    if (index !== -1) {
+      this.contacts[index] = updatedContact;
       this.saveContacts();
+      this.contactsSubject.next(this.contacts);
     }
   }
 
@@ -60,5 +65,9 @@ export class ContactsService {
 
   private saveContacts() {
     localStorage.setItem('contacts', JSON.stringify(this.contacts));
+  }
+
+  genderValidator(control: AbstractControl): ValidationErrors| null {
+    return control.value === 'Select gender' ? { invalidGender: true } : null;
   }
 }

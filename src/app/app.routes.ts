@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { ContactsComponent } from './contacts/contacts.component';
-import { EditContactComponent } from './contacts/edit-contact/edit-contact.component';
-import { NewContactComponent } from './contacts/new-contact/new-contact.component';
+import { ActionContactComponent } from './contacts/action-contact/action-contact.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/contacts', pathMatch: 'full' },
@@ -9,8 +8,8 @@ export const routes: Routes = [
     path: 'contacts',
     component: ContactsComponent,
     children: [
-      { path: 'edit/:id', component: EditContactComponent },
-      { path: 'new', component: NewContactComponent }
+      { path: 'new', component: ActionContactComponent },
+      { path: 'edit/:id', component: ActionContactComponent }
     ]
   }
 ];
