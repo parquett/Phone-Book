@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
@@ -25,49 +25,45 @@ export interface ContactForm {
   providedIn: 'root'
 })
 export class ContactsService {
-  private contacts: Contact[] = [];
-  private contactsSubject = new BehaviorSubject<Contact[]>([]);
+  private contacts = signal<Contact[]>([]);
 
   constructor() {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
-      this.contacts = JSON.parse(storedContacts);
+      this.contacts.set(JSON.parse(storedContacts));
     }
-    this.contactsSubject.next(this.contacts);
   }
 
-  getContactsObservable() {
-    return this.contactsSubject.asObservable();
+  getContactsSignal(): Signal<Contact[]> {
+    return this.contacts;
   }
 
   getContactById(id: number): Contact | undefined {
-    return this.contacts.find(contact => contact.id === id);
+    return this.contacts().find(contact => contact.id === id);
   }
 
   addContact(newContact: Contact) {
-    this.contacts.push(newContact);
+    this.contacts.set([...this.contacts(), newContact]);
     this.saveContacts();
-    this.contactsSubject.next(this.contacts);
   }
 
   updateContact(id: number, updatedContact: Contact) {
-    const index = this.contacts.findIndex(contact => contact.id === id);
-    if (index !== -1) {
-      this.contacts[index] = updatedContact;
-      this.saveContacts();
-      this.contactsSubject.next(this.contacts);
-    }
+    this.contacts.set(
+      this.contacts().map(contact => (contact.id === id ? updatedContact : contact))
+    );
+    this.saveContacts();
   }
 
   getNextId(): number {
-    return this.contacts.length ? Math.max(...this.contacts.map(c => c.id)) + 1 : 1;
+    const contacts = this.contacts();
+    return contacts.length ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
   }
 
   private saveContacts() {
-    localStorage.setItem('contacts', JSON.stringify(this.contacts));
+    localStorage.setItem('contacts', JSON.stringify(this.contacts()));
   }
 
-  genderValidator(control: AbstractControl): ValidationErrors| null {
+  genderValidator(control: AbstractControl): ValidationErrors | null {
     return control.value === 'Select gender' ? { invalidGender: true } : null;
   }
 }

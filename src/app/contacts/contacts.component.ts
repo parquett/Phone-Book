@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
@@ -25,14 +25,16 @@ import { Contact, ContactsService } from './contacts.service';
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent implements OnInit {
-  contacts: Contact[] = [];
+  contacts = computed(() => this.contactsService.getContactsSignal()());
 
-  constructor(private router: Router, private contactsService: ContactsService) {}
+  constructor(private router: Router, private contactsService: ContactsService) {
+    effect(() => {
+      this.contacts();
+    });
+  }
 
   ngOnInit() {
-    this.contactsService.getContactsObservable().subscribe(contacts => {
-      this.contacts = contacts;
-    });
+ 
   }
 
   editContact(contactId: number) {

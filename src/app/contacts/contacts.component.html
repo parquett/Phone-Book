@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let contact of contacts">
+      <tr *ngFor="let contact of contacts()">
         <td>{{ contact.name }}</td>
         <td>{{ contact.phone }}</td>
         <td>{{ contact.email }}</td>
