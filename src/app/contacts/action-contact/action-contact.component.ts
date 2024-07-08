@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, NonNullableFormBuilder } from '@angular/forms';
+import { FormGroup, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
@@ -59,33 +59,23 @@ export class ActionContactComponent implements OnInit {
       if (this.isEditMode) {
         const contact = this.contactsService.getContactById(this.contactId!);
         if (contact) {
-          this.contactForm.patchValue(contact);
+          this.contactForm.reset(contact);
         }
       }
     });
   }
 
-  get name() {return this.contactForm.controls.name;}
-
-  get phone() {return this.contactForm.controls.phone;}
-
-  get email() {return this.contactForm.controls.email;}
-
-  get address() {return this.contactForm.controls.address;}
-
-  get gender() {return this.contactForm.controls.gender;}
-
-  get status() {return this.contactForm.controls.status;}
 
   saveContact() {
+    const formValue  = this.contactForm.getRawValue();
       const contact: Contact = {
         id: this.isEditMode ? this.contactId! : this.contactsService.getNextId(),
-        name: this.name.value,
-        phone: this.phone.value,
-        email: this.email.value,
-        address: this.address.value!,
-        gender: this.gender.value,
-        status: this.status.value
+        name: formValue.name,
+        phone: formValue.phone,
+        email: formValue.email,
+        address: formValue.address!,
+        gender: formValue.gender,
+        status: formValue.status
       };
 
       if (this.isEditMode) {

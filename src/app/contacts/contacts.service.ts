@@ -1,6 +1,5 @@
 import { Injectable, Signal, signal } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
 
 export interface Contact {
   id: number;
