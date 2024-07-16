@@ -1,15 +1,15 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
-import { FormGroup, Validators, NonNullableFormBuilder } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, NonNullableFormBuilder } from '@angular/forms';
 import { Contact, ContactsService, ContactForm } from '../contacts.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { ContactFormHelper } from '../contacts-form-helper';
 
 @Component({
   selector: 'app-action-contact',
@@ -31,6 +31,7 @@ export class ActionContactComponent implements OnInit {
   contactId: number | null = null;
   isEditMode = false;
   destroyRef = inject(DestroyRef);
+  formHelper: ContactFormHelper;
 
   constructor(
     private fb: NonNullableFormBuilder,
@@ -38,23 +39,19 @@ export class ActionContactComponent implements OnInit {
     private router: Router,
     private contactsService: ContactsService
   ) {
-    this.contactForm = this.fb.group({
-      name: ['', Validators.required],
-      phone: ['', Validators.required],
-      email: ['', [Validators.email]],
-      address: [''],
-      gender: ['Select gender', [Validators.required, this.contactsService.genderValidator]],
-      status: ['', Validators.required]
-    }) as FormGroup<ContactForm>;
+    this.formHelper = new ContactFormHelper(fb, contactsService);
+    this.contactForm = this.formHelper.createContactForm();
   }
 
   ngOnInit(): void {
-    this.route.paramMap.pipe( 
+    this.route.paramMap.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(params => {
       const idParam = params.get('id');
       this.contactId = idParam ? Number(idParam) : null;
       this.isEditMode = this.contactId !== null;
+
+      this.formHelper.setEditMode(this.isEditMode, this.contactId);
 
       if (this.isEditMode) {
         const contact = this.contactsService.getContactById(this.contactId!);
@@ -65,26 +62,17 @@ export class ActionContactComponent implements OnInit {
     });
   }
 
-
   saveContact() {
-    const formValue  = this.contactForm.getRawValue();
-      const contact: Contact = {
-        id: this.isEditMode ? this.contactId! : this.contactsService.getNextId(),
-        name: formValue.name,
-        phone: formValue.phone,
-        email: formValue.email,
-        address: formValue.address!,
-        gender: formValue.gender,
-        status: formValue.status
-      };
+    const formValue = this.contactForm.getRawValue();
+    const contact = this.formHelper.toContact(formValue, this.isEditMode, this.contactId);
 
-      if (this.isEditMode) {
-        this.contactsService.updateContact(this.contactId!, contact);
-      } else {
-        this.contactsService.addContact(contact);
-      }
+    if (this.isEditMode) {
+      this.contactsService.updateContact(this.contactId!, contact);
+    } else {
+      this.contactsService.addContact(contact);
+    }
 
-      this.closeDialog();
+    this.closeDialog();
   }
 
   cancel() {
