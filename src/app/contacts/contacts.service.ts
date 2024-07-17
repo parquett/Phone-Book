@@ -1,5 +1,7 @@
 import { Injectable, Signal, signal } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { delay, tap, map } from 'rxjs/operators';
 
 export interface Contact {
   id: number;
@@ -43,23 +45,35 @@ export class ContactsService {
 
   addContact(newContact: Contact) {
     this.contacts.set([...this.contacts(), newContact]);
-    this.saveContacts();
+    this.saveContactsToLocalStorage();
   }
 
   updateContact(id: number, updatedContact: Contact) {
     this.contacts.set(
       this.contacts().map(contact => (contact.id === id ? updatedContact : contact))
     );
-    this.saveContacts();
+    this.saveContactsToLocalStorage();
+  }
+
+  saveContact(contact: Contact): Observable<Contact> {
+    if (!contact.id) {
+      contact.id = this.getNextId();
+    }
+    this.addContact(contact);
+    return of(contact).pipe(
+      delay(500),
+      tap(() => this.saveContactsToLocalStorage()),
+      map(() => contact)
+    );
+  }
+
+  private saveContactsToLocalStorage() {
+    localStorage.setItem('contacts', JSON.stringify(this.contacts()));
   }
 
   getNextId(): number {
     const contacts = this.contacts();
     return contacts.length ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
-  }
-
-  private saveContacts() {
-    localStorage.setItem('contacts', JSON.stringify(this.contacts()));
   }
 
   genderValidator(control: AbstractControl): ValidationErrors | null {
