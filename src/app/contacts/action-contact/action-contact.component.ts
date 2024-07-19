@@ -11,7 +11,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Contact, ContactsService, ContactForm } from '../contacts.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ContactFormHelper } from '../contacts-form-helper';
-import { tap } from 'rxjs';
+import { StateService } from '../state.service';
+import { LoaderModule } from '@progress/kendo-angular-indicators';
 
 @Component({
   selector: 'app-action-contact',
@@ -24,7 +25,8 @@ import { tap } from 'rxjs';
     DropDownsModule,
     RadioButtonModule,
     NotificationModule,
-    DialogModule
+    DialogModule,
+    LoaderModule
   ],
   templateUrl: './action-contact.component.html',
   styleUrls: ['./action-contact.component.scss']
@@ -36,13 +38,14 @@ export class ActionContactComponent implements OnInit {
   destroyRef = inject(DestroyRef);
   formHelper: ContactFormHelper;
   notificationService = inject(NotificationService);
-
+  trigger = false;
 
   constructor(
     private fb: NonNullableFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private contactsService: ContactsService,
+    private stateService: StateService
   ) {
     this.formHelper = new ContactFormHelper(fb, contactsService);
     this.contactForm = this.formHelper.createContactForm();
@@ -61,7 +64,7 @@ export class ActionContactComponent implements OnInit {
       if (this.isEditMode) {
         const contact = this.contactsService.getContactById(this.contactId!);
         if (contact) {
-          this.contactForm.reset(contact);
+          this.contactForm.reset(contact); 
         }
       }
     });
@@ -70,25 +73,26 @@ export class ActionContactComponent implements OnInit {
   saveContact() {
     const formValue = this.contactForm.getRawValue();
     const contact = this.formHelper.toContact(formValue, this.isEditMode, this.contactId);
-
-    if (this.isEditMode) {
-      this.contactsService.updateContact(this.contactId!, contact);
-      this.showNotification();
+    
+    
+    this.contactsService.saveContact(contact).subscribe(updatedContact => {
+      if(!contact.id){
+        this.stateService.getContactsSignal().set([...this.stateService.getContactsSignal()(), updatedContact]);
+      } else {
+        this.stateService.getContactsSignal().set(this.stateService.getContactsSignal()().map(c => (c.id === updatedContact.id ? updatedContact : c)));
+      }
+      this.showNotification(this.isEditMode ? 'Contact updated' : 'Contact added');
       this.closeDialog();
-    } else {
-      this.contactsService.saveContact(contact).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe();
-      this.showNotification();
-      this.closeDialog();
-    }
+    })
+    this.trigger = true;
   }
 
-  showNotification() {
+
+  showNotification(message: string) {
     this.notificationService.show({ 
-      content: 'Contact saved', 
+      content: message, 
       animation: { type: 'fade', duration: 400 }, 
-      position: { horizontal: 'right', vertical: 'top' }, 
+      position: { horizontal: 'center', vertical: 'top' }, 
       type: { style: 'success', icon: true } 
     });
   }

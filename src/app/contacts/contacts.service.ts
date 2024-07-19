@@ -43,29 +43,27 @@ export class ContactsService {
     return this.contacts().find(contact => contact.id === id);
   }
 
-  addContact(newContact: Contact) {
-    this.contacts.set([...this.contacts(), newContact]);
-    this.saveContactsToLocalStorage();
-  }
-
-  updateContact(id: number, updatedContact: Contact) {
-    this.contacts.set(
-      this.contacts().map(contact => (contact.id === id ? updatedContact : contact))
-    );
-    this.saveContactsToLocalStorage();
-  }
-
   saveContact(contact: Contact): Observable<Contact> {
-    if (!contact.id) {
-      contact.id = this.getNextId();
-    }
-    this.addContact(contact);
     return of(contact).pipe(
-      delay(500),
-      tap(() => this.saveContactsToLocalStorage()),
-      map(() => contact)
+      delay(5000),
+      
+      tap(savedContact => {
+        if (!this.getContactById(savedContact.id!)) {
+          savedContact.id = this.getNextId();
+          this.contacts.set([...this.contacts(), savedContact]);
+          console.log('contact added', savedContact);
+        } else {
+          this.contacts.set(
+            this.contacts().map(c => (c.id === savedContact.id ? savedContact : c))
+          );
+          console.log('contact updated', savedContact);
+        }
+        this.saveContactsToLocalStorage();
+      }),
+      map(savedContact => savedContact)
     );
   }
+
 
   private saveContactsToLocalStorage() {
     localStorage.setItem('contacts', JSON.stringify(this.contacts()));
