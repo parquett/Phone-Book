@@ -27,6 +27,7 @@
     "@progress/kendo-angular-dialog": "16.3.0",
     "@progress/kendo-angular-dropdowns": "^16.3.0",
     "@progress/kendo-angular-icons": "16.3.0",
+    "@progress/kendo-angular-indicators": "^16.3.0",
     "@progress/kendo-angular-inputs": "16.3.0",
     "@progress/kendo-angular-intl": "16.3.0",
     "@progress/kendo-angular-l10n": "16.3.0",
