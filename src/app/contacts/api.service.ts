@@ -53,8 +53,7 @@ export class ApiService {
           this.contacts.set([...this.contacts(), savedContact]);
           console.log('contact added', savedContact);
         } else {
-          const updatedContact = this.contacts().map(c => (c.id === savedContact.id ? savedContact : c));
-          this.contacts.set(updatedContact);
+          this.contacts.update(contacts => contacts.map(c => (c.id === savedContact.id ? savedContact : c)));
           console.log('contact updated', savedContact);
         }
         this.saveContactsToLocalStorage();
