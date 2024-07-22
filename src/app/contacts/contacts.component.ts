@@ -25,7 +25,7 @@ import { Contact, ApiService } from './api.service';
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent{
-  contacts = computed(() => this.apiService.getContactsSignal()());
+  contacts = this.apiService.contacts;
 
   constructor(private router: Router, private apiService: ApiService) {}
 

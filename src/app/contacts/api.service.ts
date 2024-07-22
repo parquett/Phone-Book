@@ -1,7 +1,8 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { Injectable, Signal, inject } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { delay, tap, map } from 'rxjs/operators';
+import { delay, tap } from 'rxjs/operators';
+import { StateService } from './state.service';
 
 export interface Contact {
   id: number;
@@ -26,10 +27,14 @@ export interface ContactForm {
   providedIn: 'root'
 })
 export class ApiService {
-  private contacts = signal<Contact[]>([]);
+  storageKey='contacts';
+  private stateService = inject(StateService);
+  get contacts() { return this.stateService.getContactsSignal(); }
+
+
 
   constructor() {
-    const storedContacts = localStorage.getItem('contacts');
+    const storedContacts = localStorage.getItem(this.storageKey);
     if (storedContacts) {
       this.contacts.set(JSON.parse(storedContacts));
     }
@@ -46,14 +51,14 @@ export class ApiService {
   saveContact(contact: Contact): Observable<Contact> {
     return of(contact).pipe(
       delay(5000),
-      
       tap(savedContact => {
-        if (!this.getContactById(savedContact.id!)) {
+        console.log('id', savedContact.id);
+        if (!savedContact.id) {
           savedContact.id = this.getNextId();
-          this.contacts.set([...this.contacts(), savedContact]);
+          this.stateService.addContact(savedContact);
           console.log('contact added', savedContact);
         } else {
-          this.contacts.update(contacts => contacts.map(c => (c.id === savedContact.id ? savedContact : c)));
+          this.stateService.updateContact(savedContact.id!, savedContact);
           console.log('contact updated', savedContact);
         }
         this.saveContactsToLocalStorage();
@@ -63,7 +68,7 @@ export class ApiService {
 
 
   private saveContactsToLocalStorage() {
-    localStorage.setItem('contacts', JSON.stringify(this.contacts()));
+    localStorage.setItem(this.storageKey, JSON.stringify(this.contacts()));
   }
 
   getNextId(): number {

@@ -1,22 +1,25 @@
-import { Injectable, Signal, signal } from '@angular/core';
-import { Contact, ApiService } from './api.service';
+import { Injectable, signal } from '@angular/core';
+import { Contact } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StateService {
-  private contactsSignal = signal<Contact[]>([]);
+  private contactsSignal = signal<Contact[]>([]);  
 
-  constructor(private apiService: ApiService) {
-    this.loadInitialContacts();
+  constructor() {
   }
 
   getContactsSignal() {
     return this.contactsSignal;
   }
 
-  loadInitialContacts() {
-    this.contactsSignal.set(this.apiService.getContactsSignal()());
+
+  addContact(contact: Contact){
+    this.contactsSignal.set([...this.contactsSignal(), contact]);
   }
 
+  updateContact(id: number, updatedContact: Contact){
+    this.contactsSignal.update(contactsSignal => contactsSignal.map(c => (c.id === updatedContact.id ? updatedContact : c)));
+  }
 }
