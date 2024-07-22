@@ -6,7 +6,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Contact, ContactsService } from './contacts.service';
+import { Contact, ApiService } from './api.service';
 
 @Component({
   selector: 'app-contacts',
@@ -24,18 +24,10 @@ import { Contact, ContactsService } from './contacts.service';
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss']
 })
-export class ContactsComponent implements OnInit {
-  contacts = computed(() => this.contactsService.getContactsSignal()());
+export class ContactsComponent{
+  contacts = computed(() => this.apiService.getContactsSignal()());
 
-  constructor(private router: Router, private contactsService: ContactsService) {
-    effect(() => {
-      this.contacts();
-    });
-  }
-
-  ngOnInit() {
- 
-  }
+  constructor(private router: Router, private apiService: ApiService) {}
 
   editContact(contactId: number) {
     this.router.navigate(['/contacts/edit', contactId]);

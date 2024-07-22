@@ -8,7 +8,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Contact, ContactsService, ContactForm } from '../contacts.service';
+import { Contact, ApiService, ContactForm } from '../api.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ContactFormHelper } from '../contacts-form-helper';
 import { StateService } from '../state.service';
@@ -44,10 +44,10 @@ export class ActionContactComponent implements OnInit {
     private fb: NonNullableFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private contactsService: ContactsService,
+    private apiService: ApiService,
     private stateService: StateService
   ) {
-    this.formHelper = new ContactFormHelper(fb, contactsService);
+    this.formHelper = new ContactFormHelper(fb, apiService);
     this.contactForm = this.formHelper.createContactForm();
   }
 
@@ -62,7 +62,7 @@ export class ActionContactComponent implements OnInit {
       this.formHelper.setEditMode(this.isEditMode, this.contactId);
 
       if (this.isEditMode) {
-        const contact = this.contactsService.getContactById(this.contactId!);
+        const contact = this.apiService.getContactById(this.contactId!);
         if (contact) {
           this.contactForm.reset(contact); 
         }
@@ -75,7 +75,7 @@ export class ActionContactComponent implements OnInit {
     const contact = this.formHelper.toContact(formValue, this.isEditMode, this.contactId);
     
     
-    this.contactsService.saveContact(contact).subscribe(updatedContact => {
+    this.apiService.saveContact(contact).subscribe(updatedContact => {
       if(!contact.id){
         this.stateService.getContactsSignal().set([...this.stateService.getContactsSignal()(), updatedContact]);
       } else {

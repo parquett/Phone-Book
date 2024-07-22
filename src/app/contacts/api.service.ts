@@ -25,7 +25,7 @@ export interface ContactForm {
 @Injectable({
   providedIn: 'root'
 })
-export class ContactsService {
+export class ApiService {
   private contacts = signal<Contact[]>([]);
 
   constructor() {
@@ -53,14 +53,12 @@ export class ContactsService {
           this.contacts.set([...this.contacts(), savedContact]);
           console.log('contact added', savedContact);
         } else {
-          this.contacts.set(
-            this.contacts().map(c => (c.id === savedContact.id ? savedContact : c))
-          );
+          const updatedContact = this.contacts().map(c => (c.id === savedContact.id ? savedContact : c));
+          this.contacts.set(updatedContact);
           console.log('contact updated', savedContact);
         }
         this.saveContactsToLocalStorage();
       }),
-      map(savedContact => savedContact)
     );
   }
 

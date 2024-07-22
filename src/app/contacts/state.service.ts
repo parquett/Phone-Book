@@ -1,5 +1,5 @@
 import { Injectable, Signal, signal } from '@angular/core';
-import { Contact, ContactsService } from './contacts.service';
+import { Contact, ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,7 @@ import { Contact, ContactsService } from './contacts.service';
 export class StateService {
   private contactsSignal = signal<Contact[]>([]);
 
-  constructor(private contactsService: ContactsService) {
+  constructor(private apiService: ApiService) {
     this.loadInitialContacts();
   }
 
@@ -16,7 +16,7 @@ export class StateService {
   }
 
   loadInitialContacts() {
-    this.contactsSignal.set(this.contactsService.getContactsSignal()());
+    this.contactsSignal.set(this.apiService.getContactsSignal()());
   }
 
 }

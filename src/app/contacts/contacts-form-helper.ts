@@ -1,13 +1,13 @@
 import { NonNullableFormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ContactsService, ContactForm, Contact } from './contacts.service';
+import { ApiService, ContactForm, Contact } from './api.service';
 
 export class ContactFormHelper {
   private fb: NonNullableFormBuilder;
-  private contactsService: ContactsService;
+  private contactsService: ApiService;
   private isEditMode: boolean = false;
   private contactId: number | null = null;
 
-  constructor(fb: NonNullableFormBuilder, contactsService: ContactsService) {
+  constructor(fb: NonNullableFormBuilder, contactsService: ApiService) {
     this.fb = fb;
     this.contactsService = contactsService;
   }
