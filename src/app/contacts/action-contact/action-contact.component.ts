@@ -10,7 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { StateService } from '../state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ContactFormHelper } from '../contacts-form-helper';
+import { ContactFormBuilder } from '../contacts-form-builder';
 import { LoaderModule } from '@progress/kendo-angular-indicators';
 
 @Component({
@@ -31,7 +31,7 @@ import { LoaderModule } from '@progress/kendo-angular-indicators';
   styleUrls: ['./action-contact.component.scss']
 })
 export class ActionContactComponent implements OnInit {
-  contactForm: ContactFormHelper;
+  contactForm: ContactFormBuilder;
   contactId: number | null = null;
   isEditMode = false;
   loaderTrigger = false;
@@ -42,9 +42,16 @@ export class ActionContactComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
 
+  genderList = [
+    { value: 'Male', text: 'Male' },
+    { value: 'Female', text: 'Female' }
+  ];
+  
+  defaultGender = { value: undefined, text: 'Select gender' };
+
   constructor(
   ) {
-    this.contactForm = new ContactFormHelper();
+    this.contactForm = new ContactFormBuilder();
   }
 
   ngOnInit(): void {
@@ -70,8 +77,9 @@ export class ActionContactComponent implements OnInit {
     const formValue = this.contactForm.getRawValue();
     const contact = this.contactForm.toContact(formValue, this.isEditMode, this.contactId);
     
-    this.apiService.saveContact(contact).subscribe(() => {
-      this.apiService.saveContact(contact);
+    this.apiService.saveContact(contact).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
       this.showNotification(this.isEditMode ? 'Contact updated' : 'Contact added');
       this.closeDialog();
     })

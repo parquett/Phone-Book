@@ -34,10 +34,12 @@
       <div class="form-group">
         <label>Gender*</label>
         <kendo-dropdownlist
-          [data]="['Male', 'Female']"
+          [data]="genderList"
           [formControl]="contactForm.controls.gender"
-          [defaultItem]="'Select gender'"
+          [defaultItem]="defaultGender"
           [valuePrimitive]="true"
+          valueField="value"
+          textField="text"
         ></kendo-dropdownlist>
         <div *ngIf="contactForm.controls.gender.invalid && contactForm.controls.gender.touched" class="alert alert-danger mt-2">Gender is required</div>
       </div>

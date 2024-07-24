@@ -1,10 +1,7 @@
 import { FormGroup, Validators, AbstractControl, ValidationErrors, FormControl, ɵFormGroupValue } from '@angular/forms';
-import { ApiService } from './api.service';
 import { ContactForm, Contact } from './state.service';
-import { inject } from '@angular/core';
 
-export class ContactFormHelper extends FormGroup<ContactForm> {
-  private apiService = inject(ApiService);
+export class ContactFormBuilder extends FormGroup<ContactForm> {
   private isEditMode: boolean = false;
   private contactId: number | null = null;
 
@@ -14,7 +11,7 @@ export class ContactFormHelper extends FormGroup<ContactForm> {
       phone: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.email]),
       address: new FormControl(''),
-      gender: new FormControl('Select gender', [Validators.required, ContactFormHelper.genderValidator]),
+      gender: new FormControl('', [Validators.required, ContactFormBuilder.genderValidator]),
       status: new FormControl('', Validators.required)
     });
   }
@@ -38,6 +35,6 @@ export class ContactFormHelper extends FormGroup<ContactForm> {
   }
 
   static genderValidator(control: AbstractControl): ValidationErrors | null {
-    return control.value === 'Select gender' ? { invalidGender: true } : null;
+    return control.value === undefined ? { invalidGender: true } : null;
   }
 }
