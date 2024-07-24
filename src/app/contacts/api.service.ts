@@ -1,27 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
-import { StateService } from './state.service';
+import { StateService, Contact } from './state.service';
 
-export interface Contact {
-  id: number;
-  name: string;
-  phone: string;
-  email?: string;
-  address?: string;
-  gender: string;
-  status: string;
-}
-
-export interface ContactForm {
-  name: FormControl<string>;
-  phone: FormControl<string>;
-  email: FormControl<string>;
-  address: FormControl<string | null>;
-  gender: FormControl<string>;
-  status: FormControl<string>;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -38,10 +19,6 @@ export class ApiService {
     if (storedContacts) {
       this.contacts.set(JSON.parse(storedContacts));
     }
-  }
-
-  getContactById(id: number): Contact | undefined {
-    return this.contacts().find(contact => contact.id === id);
   }
 
   saveContact(contact: Contact): Observable<Contact> {
@@ -68,7 +45,7 @@ export class ApiService {
 
   getNextId(): number {
     const contacts = this.contacts();
-    return contacts.length ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
+    return contacts.length ? Math.max(...contacts.map(c => c.id!)) + 1 : 1;
   }
 
 }

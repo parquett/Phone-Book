@@ -1,5 +1,6 @@
 import { NonNullableFormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ApiService, ContactForm, Contact } from './api.service';
+import { ApiService } from './api.service';
+import { ContactForm, Contact } from './state.service';
 import { inject } from '@angular/core';
 
 export class ContactFormHelper {
@@ -8,8 +9,7 @@ export class ContactFormHelper {
   private isEditMode: boolean = false;
   private contactId: number | null = null;
 
-  constructor() {
-  }
+  constructor() {}
 
   createContactForm(): FormGroup<ContactForm> {
     return this.fb.group({
@@ -23,7 +23,7 @@ export class ContactFormHelper {
   }
 
   toContact(formValue: any, isEditMode: boolean, contactId: number | null): Contact {
-    const id = isEditMode ? contactId! : 0;
+    const id = isEditMode ? contactId! : null;
     return {
       id,
       name: formValue.name,

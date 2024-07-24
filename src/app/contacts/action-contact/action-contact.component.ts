@@ -8,7 +8,8 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ApiService, ContactForm } from '../api.service';
+import { ApiService } from '../api.service';
+import { ContactForm, StateService } from '../state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ContactFormHelper } from '../contacts-form-helper';
 import { LoaderModule } from '@progress/kendo-angular-indicators';
@@ -39,6 +40,7 @@ export class ActionContactComponent implements OnInit {
   destroyRef = inject(DestroyRef);
   notificationService = inject(NotificationService);
   apiService = inject(ApiService);
+  stateService = inject(StateService);
   route = inject(ActivatedRoute);
   router = inject(Router);
 
@@ -59,7 +61,7 @@ export class ActionContactComponent implements OnInit {
       this.formHelper.setEditMode(this.isEditMode, this.contactId);
 
       if (this.isEditMode) {
-        const contact = this.apiService.getContactById(this.contactId!);
+        const contact = this.stateService.getContactById(this.contactId!);
         if (contact) {
           this.contactForm.reset(contact); 
         }
