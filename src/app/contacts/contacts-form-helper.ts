@@ -1,15 +1,14 @@
-import { NonNullableFormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ApiService, ContactForm, Contact } from './api.service';
+import { inject } from '@angular/core';
 
 export class ContactFormHelper {
-  private fb: NonNullableFormBuilder;
-  private apiService: ApiService;
+  private fb = inject(NonNullableFormBuilder);
+  private apiService = inject(ApiService);
   private isEditMode: boolean = false;
   private contactId: number | null = null;
 
-  constructor(fb: NonNullableFormBuilder, apiService: ApiService) {
-    this.fb = fb;
-    this.apiService = apiService;
+  constructor() {
   }
 
   createContactForm(): FormGroup<ContactForm> {
@@ -18,7 +17,7 @@ export class ContactFormHelper {
       phone: ['', Validators.required],
       email: ['', [Validators.email]],
       address: [''],
-      gender: ['Select gender', [Validators.required, this.apiService.genderValidator]],
+      gender: ['Select gender', [Validators.required, this.genderValidator]],
       status: ['', Validators.required]
     }) as FormGroup<ContactForm>;
   }
@@ -41,11 +40,7 @@ export class ContactFormHelper {
     this.contactId = contactId;
   }
 
-  isInEditMode(): boolean {
-    return this.isEditMode;
-  }
-
-  getContactId(): number | null {
-    return this.contactId;
+  genderValidator(control: AbstractControl): ValidationErrors | null {
+    return control.value === 'Select gender' ? { invalidGender: true } : null;
   }
 }

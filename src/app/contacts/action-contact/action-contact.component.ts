@@ -1,6 +1,6 @@
 import { NotificationModule, NotificationService } from '@progress/kendo-angular-notification';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
-import { FormGroup, NonNullableFormBuilder } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
@@ -34,18 +34,17 @@ export class ActionContactComponent implements OnInit {
   contactForm!: FormGroup<ContactForm>;
   contactId: number | null = null;
   isEditMode = false;
-  destroyRef = inject(DestroyRef);
-  formHelper: ContactFormHelper;
-  notificationService = inject(NotificationService);
   trigger = false;
+  formHelper: ContactFormHelper;
+  destroyRef = inject(DestroyRef);
+  notificationService = inject(NotificationService);
+  apiService = inject(ApiService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
 
   constructor(
-    private fb: NonNullableFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private apiService: ApiService,
   ) {
-    this.formHelper = new ContactFormHelper(fb, apiService);
+    this.formHelper = new ContactFormHelper();
     this.contactForm = this.formHelper.createContactForm();
   }
 

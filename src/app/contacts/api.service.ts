@@ -1,5 +1,5 @@
-import { Injectable, Signal, inject } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
+import { Injectable, inject } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 import { StateService } from './state.service';
@@ -40,10 +40,6 @@ export class ApiService {
     }
   }
 
-  getContactsSignal(): Signal<Contact[]> {
-    return this.contacts;
-  }
-
   getContactById(id: number): Contact | undefined {
     return this.contacts().find(contact => contact.id === id);
   }
@@ -66,7 +62,6 @@ export class ApiService {
     );
   }
 
-
   private saveContactsToLocalStorage() {
     localStorage.setItem(this.storageKey, JSON.stringify(this.contacts()));
   }
@@ -76,7 +71,4 @@ export class ApiService {
     return contacts.length ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
   }
 
-  genderValidator(control: AbstractControl): ValidationErrors | null {
-    return control.value === 'Select gender' ? { invalidGender: true } : null;
-  }
 }
