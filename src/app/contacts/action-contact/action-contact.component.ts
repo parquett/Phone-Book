@@ -1,6 +1,5 @@
 import { NotificationModule, NotificationService } from '@progress/kendo-angular-notification';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
@@ -9,7 +8,7 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
-import { ContactForm, StateService } from '../state.service';
+import { StateService } from '../state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ContactFormHelper } from '../contacts-form-helper';
 import { LoaderModule } from '@progress/kendo-angular-indicators';
@@ -32,11 +31,10 @@ import { LoaderModule } from '@progress/kendo-angular-indicators';
   styleUrls: ['./action-contact.component.scss']
 })
 export class ActionContactComponent implements OnInit {
-  contactForm!: FormGroup<ContactForm>;
+  contactForm: ContactFormHelper;
   contactId: number | null = null;
   isEditMode = false;
-  trigger = false;
-  formHelper: ContactFormHelper;
+  loaderTrigger = false;
   destroyRef = inject(DestroyRef);
   notificationService = inject(NotificationService);
   apiService = inject(ApiService);
@@ -46,8 +44,7 @@ export class ActionContactComponent implements OnInit {
 
   constructor(
   ) {
-    this.formHelper = new ContactFormHelper();
-    this.contactForm = this.formHelper.createContactForm();
+    this.contactForm = new ContactFormHelper();
   }
 
   ngOnInit(): void {
@@ -58,7 +55,7 @@ export class ActionContactComponent implements OnInit {
       this.contactId = idParam ? Number(idParam) : null;
       this.isEditMode = this.contactId !== null;
 
-      this.formHelper.setEditMode(this.isEditMode, this.contactId);
+      this.contactForm.setEditMode(this.isEditMode, this.contactId);
 
       if (this.isEditMode) {
         const contact = this.stateService.getContactById(this.contactId!);
@@ -71,14 +68,14 @@ export class ActionContactComponent implements OnInit {
 
   saveContact() {
     const formValue = this.contactForm.getRawValue();
-    const contact = this.formHelper.toContact(formValue, this.isEditMode, this.contactId);
+    const contact = this.contactForm.toContact(formValue, this.isEditMode, this.contactId);
     
     this.apiService.saveContact(contact).subscribe(() => {
       this.apiService.saveContact(contact);
       this.showNotification(this.isEditMode ? 'Contact updated' : 'Contact added');
       this.closeDialog();
     })
-    this.trigger = true;
+    this.loaderTrigger = true;
   }
 
 

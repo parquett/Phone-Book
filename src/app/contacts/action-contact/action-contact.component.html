@@ -3,7 +3,7 @@
       {{ isEditMode ? 'Edit Contact' : 'Add Contact' }}
     </kendo-dialog-titlebar>
     <form>
-      <fieldset [disabled]="trigger">
+      <fieldset [disabled]="loaderTrigger">
       <div class="form-group">
         <label>Name*</label>
         <div>
@@ -65,7 +65,7 @@
         <button kendoButton type="button" (click)="cancel()">Cancel</button>
       </kendo-dialog-actions>
       <div id="loader">
-        <kendo-loader *ngIf="trigger"></kendo-loader>
+        <kendo-loader *ngIf="loaderTrigger"></kendo-loader>
       </div>
     </fieldset>
     </form>

@@ -12,12 +12,12 @@ export interface Contact {
 }
 
 export interface ContactForm {
-  name: FormControl<string>;
-  phone: FormControl<string>;
-  email: FormControl<string>;
+  name: FormControl<string | null>;
+  phone: FormControl<string | null>;
+  email: FormControl<string | null>;
   address: FormControl<string | null>;
-  gender: FormControl<string>;
-  status: FormControl<string>;
+  gender: FormControl<string | null>;
+  status: FormControl<string | null>;
 }
 
 @Injectable({
