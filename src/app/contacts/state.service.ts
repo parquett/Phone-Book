@@ -1,5 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Observable, of, delay, tap, switchMap } from 'rxjs';
+import { ApiService } from './api.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface Contact {
   id: number | null;
@@ -25,8 +28,15 @@ export interface ContactForm {
 })
 export class StateService {
   private contactsSignal = signal<Contact[]>([]);  
+  private apiService = inject(ApiService);
+  destroyRef = inject(DestroyRef);
 
-  constructor() {
+
+   constructor() {
+    const storedContacts = this.apiService.loadContacts();
+    if (storedContacts) {
+      this.contactsSignal.set(storedContacts);
+    }
   }
 
   getContactsSignal() {
@@ -39,6 +49,26 @@ export class StateService {
 
   updateContact(id: number, updatedContact: Contact){
     this.contactsSignal.update(contactsSignal => contactsSignal.map(c => (c.id === updatedContact.id ? updatedContact : c)));
+  }
+
+  saveContact(contact: Contact){
+    return this.apiService.saveContactsToLocalStorage(contact).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(savedContact => {
+        return of(savedContact).pipe(
+          tap(savedContact => {
+            console.log('id', savedContact.id); //debug
+            if (!this.getContactById(savedContact.id!)) {
+              this.addContact(savedContact);
+              console.log('contact added', savedContact); //debug
+            } else {
+              this.updateContact(savedContact.id!, savedContact);
+              console.log('contact updated', savedContact); //debug
+            }
+          })
+        );
+      })
+    );
   }
 
   getContactById(id: number): Contact | undefined {

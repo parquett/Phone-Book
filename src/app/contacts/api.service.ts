@@ -9,43 +9,37 @@ import { StateService, Contact } from './state.service';
 })
 export class ApiService {
   storageKey='contacts';
-  private stateService = inject(StateService);
-  get contacts() { return this.stateService.getContactsSignal(); }
 
-
-
-  constructor() {
+  loadContacts(): Contact[] {
     const storedContacts = localStorage.getItem(this.storageKey);
-    if (storedContacts) {
-      this.contacts.set(JSON.parse(storedContacts));
-    }
+    return storedContacts ? JSON.parse(storedContacts) : [];
   }
 
-  saveContact(contact: Contact): Observable<Contact> {
+  saveContactsToLocalStorage(contact: Contact) {
+    const storedContacts = localStorage.getItem(this.storageKey);
+    let existingContacts: Contact[] = [];
+    if (storedContacts) {
+        existingContacts = JSON.parse(storedContacts);
+    }
+    
+    if (!contact.id) {
+      contact.id = existingContacts.length + 1;
+    }
+
     return of(contact).pipe(
       delay(5000),
-      tap(savedContact => {
-        console.log('id', savedContact.id);
-        if (!savedContact.id) {
-          savedContact.id = this.getNextId();
-          this.stateService.addContact(savedContact);
-          console.log('contact added', savedContact);
+      tap(() => {
+        const contactIndex = existingContacts.findIndex(c => c.id === contact.id);
+        if (contactIndex !== -1) {
+            // Update existing contact
+            existingContacts[contactIndex] = contact;
         } else {
-          this.stateService.updateContact(savedContact.id!, savedContact);
-          console.log('contact updated', savedContact);
+            // Add new contact
+            existingContacts.push(contact);
         }
-        this.saveContactsToLocalStorage();
-      }),
+        localStorage.setItem(this.storageKey, JSON.stringify(existingContacts));
+      })
     );
-  }
-
-  private saveContactsToLocalStorage() {
-    localStorage.setItem(this.storageKey, JSON.stringify(this.contacts()));
-  }
-
-  getNextId(): number {
-    const contacts = this.contacts();
-    return contacts.length ? Math.max(...contacts.map(c => c.id!)) + 1 : 1;
   }
 
 }

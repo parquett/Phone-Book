@@ -7,6 +7,7 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from './api.service';
+import { StateService } from './state.service';
 
 @Component({
   selector: 'app-contacts',
@@ -26,8 +27,8 @@ import { ApiService } from './api.service';
 })
 export class ContactsComponent{
   private router = inject(Router);
-  private apiService = inject(ApiService);
-  contacts = this.apiService.contacts;
+  private stateService = inject(StateService);
+  contacts = this.stateService.getContactsSignal();
 
 
   constructor() {}

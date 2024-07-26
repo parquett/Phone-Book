@@ -77,7 +77,7 @@ export class ActionContactComponent implements OnInit {
     const formValue = this.contactForm.getRawValue();
     const contact = this.contactForm.toContact(formValue, this.isEditMode, this.contactId);
     
-    this.apiService.saveContact(contact).pipe(
+    this.stateService.saveContact(contact).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.showNotification(this.isEditMode ? 'Contact updated' : 'Contact added');
