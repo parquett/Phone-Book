@@ -8,22 +8,23 @@ import { StateService, Contact } from './state.service';
   providedIn: 'root'
 })
 export class ApiService {
-  storageKey='contacts';
+  private storageKey='contacts';
+  private storageKeyNextId='nextId';
+  private nextId: number = 0;
 
-  loadContacts(): Contact[] {
+  loadContacts(): Observable<Contact[]> {
     const storedContacts = localStorage.getItem(this.storageKey);
-    return storedContacts ? JSON.parse(storedContacts) : [];
+    const storedNextId = localStorage.getItem(this.storageKeyNextId);
+    this.nextId = storedNextId ? parseInt(storedNextId) : 0;
+    return of(storedContacts ? JSON.parse(storedContacts) : []);
   }
 
   saveContactsToLocalStorage(contact: Contact) {
     const storedContacts = localStorage.getItem(this.storageKey);
-    let existingContacts: Contact[] = [];
-    if (storedContacts) {
-        existingContacts = JSON.parse(storedContacts);
-    }
+    let existingContacts: Contact[] = storedContacts? JSON.parse(storedContacts) : [];
     
     if (!contact.id) {
-      contact.id = existingContacts.length + 1;
+      contact.id = ++this.nextId;
     }
 
     return of(contact).pipe(
@@ -38,6 +39,7 @@ export class ApiService {
             existingContacts.push(contact);
         }
         localStorage.setItem(this.storageKey, JSON.stringify(existingContacts));
+        localStorage.setItem(this.storageKeyNextId, this.nextId!.toString());
       })
     );
   }

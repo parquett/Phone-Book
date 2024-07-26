@@ -35,7 +35,11 @@ export class StateService {
    constructor() {
     const storedContacts = this.apiService.loadContacts();
     if (storedContacts) {
-      this.contactsSignal.set(storedContacts);
+      storedContacts.pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(contacts => {
+        this.contactsSignal.set(contacts);
+      });
     }
   }
 
