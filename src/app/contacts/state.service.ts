@@ -1,8 +1,8 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, of, delay, tap, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 export interface Contact {
   id: number | null;
@@ -27,21 +27,10 @@ export interface ContactForm {
   providedIn: 'root'
 })
 export class StateService {
-  private contactsSignal = signal<Contact[]>([]);  
   private apiService = inject(ApiService);
   destroyRef = inject(DestroyRef);
-
-
-   constructor() {
-    const storedContacts = this.apiService.loadContacts();
-    if (storedContacts) {
-      storedContacts.pipe(
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe(contacts => {
-        this.contactsSignal.set(contacts);
-      });
-    }
-  }
+  private rawContactsSignal = toSignal(this.apiService.loadContacts(), {initialValue: []});
+  private contactsSignal = signal(this.rawContactsSignal());  
 
   getContactsSignal() {
     return this.contactsSignal;
