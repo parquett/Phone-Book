@@ -12,16 +12,24 @@ export class ApiService {
   private storageKeyNextId='nextId';
   private nextId: number = 0;
 
+  getFromLS(key: string){
+    return localStorage.getItem(key);
+  }
+
+  parseFromLS(data: string | null){
+    return data ? JSON.parse(data) : [];
+  }
+
   loadContacts(): Observable<Contact[]> {
-    const storedContacts = localStorage.getItem(this.storageKey);
-    const storedNextId = localStorage.getItem(this.storageKeyNextId);
+    const storedContacts = this.getFromLS(this.storageKey);
+    const storedNextId = this.getFromLS(this.storageKeyNextId);
     this.nextId = storedNextId ? parseInt(storedNextId) : 0;
-    return of(storedContacts ? JSON.parse(storedContacts) : []);
+    return of(this.parseFromLS(storedContacts));
   }
 
   saveContactsToLocalStorage(contact: Contact) {
-    const storedContacts = localStorage.getItem(this.storageKey);
-    let existingContacts: Contact[] = storedContacts? JSON.parse(storedContacts) : [];
+    const storedContacts = this.getFromLS(this.storageKey);
+    let existingContacts: Contact[] = this.parseFromLS(storedContacts);
     
     if (!contact.id) {
       contact.id = ++this.nextId;
