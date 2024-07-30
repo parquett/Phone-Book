@@ -1,8 +1,8 @@
-import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, of, delay, tap, switchMap } from 'rxjs';
+import { tap} from 'rxjs';
 import { ApiService } from './api.service';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 export interface Contact {
   id: number | null;
@@ -27,44 +27,41 @@ export interface ContactForm {
   providedIn: 'root'
 })
 export class StateService {
-  private apiService = inject(ApiService);
-  destroyRef = inject(DestroyRef);
-  private rawContactsSignal = toSignal(this.apiService.loadContacts(), {initialValue: []});
-  private contactsSignal = signal(this.rawContactsSignal());  
+  private _apiService = inject(ApiService);
+  private _destroyRef = inject(DestroyRef);
+  private _contactsSignal = signal<Contact[]>([]);  
+
+  constructor() {
+    const storedContacts = this._apiService.loadContacts();
+    if (storedContacts) {
+      storedContacts.pipe(
+        takeUntilDestroyed(this._destroyRef)
+      ).subscribe(contacts => {
+        this._contactsSignal.set(contacts);
+      });
+    }
+  }
 
   getContactsSignal() {
-    return this.contactsSignal;
-  }
-
-  addContact(contact: Contact){
-    this.contactsSignal.set([...this.contactsSignal(), contact]);
-  }
-
-  updateContact(id: number, updatedContact: Contact){
-    this.contactsSignal.update(contactsSignal => contactsSignal.map(c => (c.id === updatedContact.id ? updatedContact : c)));
+    return this._contactsSignal;
   }
 
   saveContact(contact: Contact){
-    return this.apiService.saveContactsToLocalStorage(contact).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      switchMap(savedContact => {
-        return of(savedContact).pipe(
+    return this._apiService.saveContactsToLocalStorage(contact).pipe(
+      takeUntilDestroyed(this._destroyRef),
           tap(savedContact => {
-            console.log('id', savedContact.id); //debug
-            if (!this.getContactById(savedContact.id!)) {
-              this.addContact(savedContact);
-              console.log('contact added', savedContact); //debug
-            } else {
-              this.updateContact(savedContact.id!, savedContact);
-              console.log('contact updated', savedContact); //debug
-            }
+            this._contactsSignal.update(contacts => {
+              const idx = contacts.findIndex(contact => contact.id === savedContact.id);
+              console.log('idx', idx); 
+              return idx == -1
+              ? [...contacts, savedContact]
+              : [...contacts.slice(0, idx), savedContact, ...contacts.slice(idx+1)];
+            });
           })
-        );
-      })
-    );
+    )
   }
 
   getContactById(id: number): Contact | undefined {
-    return this.contactsSignal().find(contact => contact.id === id);
+    return this._contactsSignal().find(contact => contact.id === id);
   }
 }

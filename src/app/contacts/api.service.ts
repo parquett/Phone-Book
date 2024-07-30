@@ -1,42 +1,37 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable} from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
-import { StateService, Contact } from './state.service';
+import { Contact } from './state.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private storageKey='contacts';
-  private storageKeyNextId='nextId';
-  private nextId: number = 0;
+  private _storageKey='contacts';
+  private _storageKeyNextId='nextId';
 
-  getFromLS(key: string){
-    return localStorage.getItem(key);
+  get nextId():number {
+    let recentId = localStorage.getItem(this._storageKeyNextId) ?? '0';
+    const recentIdNumber = parseInt(recentId) + 1;
+    localStorage.setItem(this._storageKeyNextId, recentIdNumber.toString());
+    return recentIdNumber
   }
 
-  parseFromLS(data: string | null){
-    return data ? JSON.parse(data) : [];
+  getAndParseContacts() {
+    const storedContacts = localStorage.getItem(this._storageKey);
+    return storedContacts ? JSON.parse(storedContacts) : [];
   }
 
   loadContacts(): Observable<Contact[]> {
-    const storedContacts = this.getFromLS(this.storageKey);
-    const storedNextId = this.getFromLS(this.storageKeyNextId);
-    this.nextId = storedNextId ? parseInt(storedNextId) : 0;
-    return of(this.parseFromLS(storedContacts));
+    return of(this.getAndParseContacts());
   }
 
   saveContactsToLocalStorage(contact: Contact) {
-    const storedContacts = this.getFromLS(this.storageKey);
-    let existingContacts: Contact[] = this.parseFromLS(storedContacts);
-    
-    if (!contact.id) {
-      contact.id = ++this.nextId;
-    }
+    let existingContacts: Contact[] = this.getAndParseContacts();
 
     return of(contact).pipe(
-      delay(5000),
+      delay(1000),
       tap(() => {
         const contactIndex = existingContacts.findIndex(c => c.id === contact.id);
         if (contactIndex !== -1) {
@@ -44,10 +39,10 @@ export class ApiService {
             existingContacts[contactIndex] = contact;
         } else {
             // Add new contact
+            contact.id = this.nextId;
             existingContacts.push(contact);
         }
-        localStorage.setItem(this.storageKey, JSON.stringify(existingContacts));
-        localStorage.setItem(this.storageKeyNextId, this.nextId!.toString());
+        localStorage.setItem(this._storageKey, JSON.stringify(existingContacts));
       })
     );
   }

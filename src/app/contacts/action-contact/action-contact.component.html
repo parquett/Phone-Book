@@ -9,21 +9,30 @@
         <div>
           <input kendoTextBox [id]="contactForm.controls.name" [formControl]="contactForm.controls.name" />
         </div>
-        <div *ngIf="contactForm.controls.name.invalid && contactForm.controls.name.touched" class="alert alert-danger mt-2">Name is required</div>
+        @if(contactForm.controls.name.invalid && contactForm.controls.name.touched)
+        {
+          <div  class="alert alert-danger mt-2">Name is required</div>
+        }
       </div>
       <div class="form-group">
         <label>Phone*</label>
         <div>
           <input kendoTextBox placeholder="XXXXXXXXX" [id]="contactForm.controls.phone" [formControl]="contactForm.controls.phone" />
         </div>
-        <div *ngIf="contactForm.controls.phone.invalid && contactForm.controls.phone.touched" class="alert alert-danger mt-2">Phone is required</div>
+        @if (contactForm.controls.phone.invalid && contactForm.controls.phone.touched)
+        {
+          <div class="alert alert-danger mt-2">Phone is required</div>
+        }
       </div>
       <div class="form-group">
         <label>Email</label>
         <div>
           <input kendoTextBox [id]="contactForm.controls.email" [formControl]="contactForm.controls.email" />
         </div>
-        <div *ngIf="contactForm.controls.email.invalid && contactForm.controls.email.touched" class="alert alert-danger mt-2">Invalid email</div>
+        @if (contactForm.controls.email.invalid && contactForm.controls.email.touched)
+        {
+          <div class="alert alert-danger mt-2">Invalid email</div>
+        }
       </div>
       <div class="form-group">
         <label for="address">Address</label>
@@ -41,7 +50,10 @@
           valueField="value"
           textField="text"
         ></kendo-dropdownlist>
-        <div *ngIf="contactForm.controls.gender.invalid && contactForm.controls.gender.touched" class="alert alert-danger mt-2">Gender is required</div>
+        @if (contactForm.controls.gender.invalid && contactForm.controls.gender.touched)
+        {
+          <div class="alert alert-danger mt-2">Gender is required</div>
+        }
       </div>
       <div class="form-group">
         <label>Status*</label>
@@ -57,7 +69,10 @@
             Off
           </label>
         </div>
-        <div *ngIf="contactForm.controls.status.invalid && contactForm.controls.status.touched" class="alert alert-danger mt-2">Status is required</div>
+        @if (contactForm.controls.status.invalid && contactForm.controls.status.touched)
+        {
+          <div class="alert alert-danger mt-2">Status is required</div>
+        }
       </div>
       <kendo-dialog-actions>
         <button kendoButton
@@ -67,7 +82,10 @@
         <button kendoButton type="button" (click)="cancel()">Cancel</button>
       </kendo-dialog-actions>
       <div id="loader">
-        <kendo-loader *ngIf="loaderTrigger"></kendo-loader>
+        @if (loaderTrigger)
+        {
+          <kendo-loader></kendo-loader>
+        }
       </div>
     </fieldset>
     </form>

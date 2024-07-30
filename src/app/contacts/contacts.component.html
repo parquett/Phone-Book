@@ -13,7 +13,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let contact of contacts()">
+      @for (contact of contactsSignal(); track contact.id){
+      <tr>
         <td>{{ contact.name }}</td>
         <td>{{ contact.phone }}</td>
         <td>{{ contact.email }}</td>
@@ -24,6 +25,7 @@
           <button kendoButton (click)="editContact(contact.id!)">Edit</button>
         </td>
       </tr>
+    }
     </tbody>
   </table>
 

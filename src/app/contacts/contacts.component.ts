@@ -6,7 +6,6 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ApiService } from './api.service';
 import { StateService } from './state.service';
 
 @Component({
@@ -26,18 +25,16 @@ import { StateService } from './state.service';
   styleUrls: ['./contacts.component.scss']
 })
 export class ContactsComponent{
-  private router = inject(Router);
-  private stateService = inject(StateService);
-  contacts = this.stateService.getContactsSignal();
-
-
-  constructor() {}
+  private _router = inject(Router);
+  private _stateService = inject(StateService);
+  
+  contactsSignal = this._stateService.getContactsSignal();
 
   editContact(contactId: number) {
-    this.router.navigate(['/contacts/edit', contactId]);
+    this._router.navigate(['/contacts/edit', contactId]);
   }
 
   addContact() {
-    this.router.navigate(['/contacts/new']);
+    this._router.navigate(['/contacts/new']);
   }
 }

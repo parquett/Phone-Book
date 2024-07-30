@@ -7,7 +7,6 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ApiService } from '../api.service';
 import { StateService } from '../state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ContactFormBuilder } from '../contacts-form-builder';
@@ -31,41 +30,38 @@ import { LoaderModule } from '@progress/kendo-angular-indicators';
   styleUrls: ['./action-contact.component.scss']
 })
 export class ActionContactComponent implements OnInit {
+  private _contactId: number | null = null;
+  private _destroyRef = inject(DestroyRef);
+  private _notificationService = inject(NotificationService);
+  private _stateService = inject(StateService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
+
   contactForm: ContactFormBuilder;
-  contactId: number | null = null;
   isEditMode = false;
   loaderTrigger = false;
-  destroyRef = inject(DestroyRef);
-  notificationService = inject(NotificationService);
-  apiService = inject(ApiService);
-  stateService = inject(StateService);
-  route = inject(ActivatedRoute);
-  router = inject(Router);
-
   genderList = [
     { value: 'Male', text: 'Male' },
     { value: 'Female', text: 'Female' }
   ];
-  
   defaultGender = { value: undefined, text: 'Select gender' };
 
-  constructor(
-  ) {
+  constructor() {
     this.contactForm = new ContactFormBuilder();
   }
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(
-      takeUntilDestroyed(this.destroyRef)
+    this._route.paramMap.pipe(
+      takeUntilDestroyed(this._destroyRef)
     ).subscribe(params => {
       const idParam = params.get('id');
-      this.contactId = idParam ? Number(idParam) : null;
-      this.isEditMode = this.contactId !== null;
+      this._contactId = idParam ? Number(idParam) : null;
+      this.isEditMode = this._contactId !== null;
 
-      this.contactForm.setEditMode(this.isEditMode, this.contactId);
+      this.contactForm.setEditMode(this.isEditMode, this._contactId);
 
       if (this.isEditMode) {
-        const contact = this.stateService.getContactById(this.contactId!);
+        const contact = this._stateService.getContactById(this._contactId!);
         if (contact) {
           this.contactForm.reset(contact); 
         }
@@ -75,10 +71,10 @@ export class ActionContactComponent implements OnInit {
 
   saveContact() {
     const formValue = this.contactForm.getRawValue();
-    const contact = this.contactForm.toContact(formValue, this.isEditMode, this.contactId);
+    const contact = this.contactForm.toContact(formValue, this.isEditMode, this._contactId);
     
-    this.stateService.saveContact(contact).pipe(
-      takeUntilDestroyed(this.destroyRef)
+    this._stateService.saveContact(contact).pipe(
+      takeUntilDestroyed(this._destroyRef)
     ).subscribe(() => {
       this.showNotification(this.isEditMode ? 'Contact updated' : 'Contact added');
       this.closeDialog();
@@ -88,7 +84,7 @@ export class ActionContactComponent implements OnInit {
 
 
   showNotification(message: string) {
-    this.notificationService.show({ 
+    this._notificationService.show({ 
       content: message, 
       animation: { type: 'fade', duration: 400 }, 
       position: { horizontal: 'center', vertical: 'top' }, 
@@ -97,7 +93,7 @@ export class ActionContactComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/contacts']);
+    this._router.navigate(['/contacts']);
   }
 
   closeDialog() {
