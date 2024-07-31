@@ -58,8 +58,6 @@ export class ActionContactComponent implements OnInit {
       this._contactId = idParam ? Number(idParam) : null;
       this.isEditMode = this._contactId !== null;
 
-      this.contactForm.setEditMode(this.isEditMode, this._contactId);
-
       if (this.isEditMode) {
         const contact = this._stateService.getContactById(this._contactId!);
         if (contact) {
@@ -92,8 +90,8 @@ export class ActionContactComponent implements OnInit {
     });
   }
 
-  cancel() {
-    this._router.navigate(['/contacts']);
+  async cancel() {
+    await this._router.navigate(['/contacts']);
   }
 
   closeDialog() {
