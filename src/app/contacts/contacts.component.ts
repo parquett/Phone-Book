@@ -28,7 +28,7 @@ export class ContactsComponent{
   private _router = inject(Router);
   private _stateService = inject(StateService);
   
-  contactsSignal = this._stateService.getContactsSignal();
+  contactsSignal = this._stateService.contactsSignal;
 
   editContact(contactId: number) {
     this._router.navigate(['/contacts/edit', contactId]);

@@ -2,8 +2,6 @@ import { FormGroup, Validators, AbstractControl, ValidationErrors, FormControl, 
 import { ContactForm, Contact } from './state.service';
 
 export class ContactFormBuilder extends FormGroup<ContactForm> {
-  private isEditMode: boolean = false;
-  private contactId: number | null = null;
 
   constructor() {
     super({
@@ -27,11 +25,6 @@ export class ContactFormBuilder extends FormGroup<ContactForm> {
       gender: formValue.gender!,
       status: formValue.status!
     };
-  }
-
-  setEditMode(isEditMode: boolean, contactId: number | null) {
-    this.isEditMode = isEditMode;
-    this.contactId = contactId;
   }
 
   static genderValidator(control: AbstractControl): ValidationErrors | null {

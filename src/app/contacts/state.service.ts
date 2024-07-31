@@ -32,23 +32,19 @@ export class StateService {
   private _contactsSignal = signal<Contact[]>([]);  
 
   constructor() {
-    const storedContacts = this._apiService.loadContacts();
-    if (storedContacts) {
-      storedContacts.pipe(
+    this._apiService.loadContacts().pipe(
         takeUntilDestroyed(this._destroyRef)
       ).subscribe(contacts => {
         this._contactsSignal.set(contacts);
       });
-    }
   }
 
-  getContactsSignal() {
+  get contactsSignal() {
     return this._contactsSignal;
   }
 
   saveContact(contact: Contact){
     return this._apiService.saveContactsToLocalStorage(contact).pipe(
-      takeUntilDestroyed(this._destroyRef),
           tap(savedContact => {
             this._contactsSignal.update(contacts => {
               const idx = contacts.findIndex(contact => contact.id === savedContact.id);
