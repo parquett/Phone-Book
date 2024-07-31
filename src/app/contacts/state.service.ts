@@ -43,7 +43,7 @@ export class StateService {
     return this._contactsSignal;
   }
 
-  saveContact(contact: Contact){
+  public saveContact(contact: Contact){
     return this._apiService.saveContactsToLocalStorage(contact).pipe(
           tap(savedContact => {
             this._contactsSignal.update(contacts => {
@@ -57,7 +57,7 @@ export class StateService {
     )
   }
 
-  getContactById(id: number): Contact | undefined {
+  public getContactById(id: number): Contact | undefined {
     return this._contactsSignal().find(contact => contact.id === id);
   }
 }

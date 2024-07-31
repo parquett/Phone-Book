@@ -23,11 +23,11 @@ export class ApiService {
     return storedContacts ? JSON.parse(storedContacts) : [];
   }
 
-  loadContacts(): Observable<Contact[]> {
+  public loadContacts(): Observable<Contact[]> {
     return of(this.getAndParseContacts()).pipe(delay(1000));
   }
 
-  saveContactsToLocalStorage(contact: Contact) {
+  public saveContactsToLocalStorage(contact: Contact) {
     let existingContacts: Contact[] = this.getAndParseContacts();
 
     return of(contact).pipe(
