@@ -18,13 +18,13 @@ export class ApiService {
     return recentIdNumber
   }
 
-  getAndParseContacts() {
+  private getAndParseContacts() {
     const storedContacts = localStorage.getItem(this._storageKey);
     return storedContacts ? JSON.parse(storedContacts) : [];
   }
 
   loadContacts(): Observable<Contact[]> {
-    return of(this.getAndParseContacts());
+    return of(this.getAndParseContacts()).pipe(delay(1000));
   }
 
   saveContactsToLocalStorage(contact: Contact) {
