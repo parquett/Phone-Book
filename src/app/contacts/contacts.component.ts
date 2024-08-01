@@ -30,11 +30,11 @@ export class ContactsComponent{
   
   contactsSignal = this._stateService.contactsSignal;
 
-  editContact(contactId: number) {
-    this._router.navigate(['/contacts/edit', contactId]);
+  async editContact(contactId: number) {
+    await this._router.navigate(['/contacts/edit', contactId]);
   }
 
-  addContact() {
-    this._router.navigate(['/contacts/new']);
+  async addContact() {
+    await this._router.navigate(['/contacts/new']);
   }
 }
