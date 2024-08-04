@@ -22,7 +22,8 @@ import { StateService } from './state.service';
     DialogModule
   ],
   templateUrl: './contacts.component.html',
-  styleUrls: ['./contacts.component.scss']
+  styleUrls: ['./contacts.component.scss'],
+  providers: [StateService]
 })
 export class ContactsComponent{
   private _router = inject(Router);

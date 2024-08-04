@@ -23,9 +23,7 @@ export interface ContactForm {
   status: FormControl<string | null>;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class StateService {
   private _apiService = inject(ApiService);
   private _destroyRef = inject(DestroyRef);
