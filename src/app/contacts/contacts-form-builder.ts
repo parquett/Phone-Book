@@ -1,5 +1,6 @@
 import { FormGroup, Validators, AbstractControl, ValidationErrors, FormControl, ɵFormGroupValue } from '@angular/forms';
-import { ContactForm, Contact } from './state.service';
+
+import {Contact, ContactForm} from './contact-form.interface';
 
 export class ContactFormBuilder extends FormGroup<ContactForm> {
 

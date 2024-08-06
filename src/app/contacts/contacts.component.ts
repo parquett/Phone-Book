@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { InputsModule, RadioButtonModule } from '@progress/kendo-angular-inputs';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
@@ -28,14 +28,19 @@ import { StateService } from './state.service';
 export class ContactsComponent{
   private _router = inject(Router);
   private _stateService = inject(StateService);
-  
-  contactsSignal = this._stateService.contactsSignal;
+  private _activatedRoute = inject(ActivatedRoute);
 
-  async editContact(contactId: number) {
-    await this._router.navigate(['/contacts/edit', contactId]);
+  protected contactsSignal = this._stateService.contactsSignal;
+
+  protected async editContact(contactId: number) {
+    await this._router.navigate(['edit', contactId], {
+      relativeTo: this._activatedRoute
+    });
   }
 
-  async addContact() {
-    await this._router.navigate(['/contacts/new']);
+  protected async addContact() {
+    await this._router.navigate(['new'], {
+      relativeTo: this._activatedRoute
+    });
   }
 }

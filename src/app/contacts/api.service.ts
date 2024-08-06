@@ -1,7 +1,8 @@
 import { Injectable} from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
-import { Contact } from './state.service';
+
+import {Contact} from './contact-form.interface';
 
 
 @Injectable({
@@ -11,11 +12,11 @@ export class ApiService {
   private _storageKey='contacts';
   private _storageKeyNextId='nextId';
 
-  get nextId():number {
-    let recentId = localStorage.getItem(this._storageKeyNextId) ?? '0';
-    const recentIdNumber = parseInt(recentId) + 1;
-    localStorage.setItem(this._storageKeyNextId, recentIdNumber.toString());
-    return recentIdNumber
+  private get nextId():number {
+    const id = localStorage.getItem(this._storageKeyNextId) ?? '0';
+    const currId = parseInt(id) + 1;
+    localStorage.setItem(this._storageKeyNextId, JSON.stringify(currId));
+    return currId;
   }
 
   private getAndParseContacts() {
@@ -24,14 +25,16 @@ export class ApiService {
   }
 
   public loadContacts(): Observable<Contact[]> {
-    return of(this.getAndParseContacts()).pipe(delay(1000));
+    return of(this.getAndParseContacts()).pipe(
+      delay(1_000)
+    );
   }
 
   public saveContactsToLocalStorage(contact: Contact) {
     let existingContacts: Contact[] = this.getAndParseContacts();
 
     return of(contact).pipe(
-      delay(1000),
+      delay(1_000),
       tap(() => {
         const contactIndex = existingContacts.findIndex(c => c.id === contact.id);
         if (contactIndex !== -1) {
