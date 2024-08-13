@@ -6,11 +6,15 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
+import { API_TOKEN } from './app/contacts/api.token';
+import { MockApiService } from './app/contacts/mock-api.service';
+import { ApiService } from './app/contacts/api.service';
 
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
-    importProvidersFrom(BrowserAnimationsModule)
+    importProvidersFrom(BrowserAnimationsModule),
+    {provide: API_TOKEN, useClass: ApiService}
   ]
 }).catch(err => console.error(err));

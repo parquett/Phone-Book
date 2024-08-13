@@ -26,7 +26,7 @@ import { MockApiService } from './mock-api.service';
   ],
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss'],
-  providers: [{provide: API_TOKEN, useClass: ApiService}, StateService]
+  providers: [StateService]
 })
 export class ContactsComponent{
   private _router = inject(Router);
