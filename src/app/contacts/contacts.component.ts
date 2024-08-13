@@ -7,6 +7,9 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StateService } from './state.service';
+import { API_TOKEN } from './api.token';
+import { ApiService } from './api.service';
+import { MockApiService } from './mock-api.service';
 
 @Component({
   selector: 'app-contacts',
@@ -23,7 +26,7 @@ import { StateService } from './state.service';
   ],
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss'],
-  providers: [StateService]
+  providers: [{provide: API_TOKEN, useClass: ApiService}, StateService]
 })
 export class ContactsComponent{
   private _router = inject(Router);

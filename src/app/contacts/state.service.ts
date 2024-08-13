@@ -1,12 +1,14 @@
-import {DestroyRef, inject, Injectable, signal} from '@angular/core';
+import {DestroyRef, Inject, inject, Injectable, signal} from '@angular/core';
 import {tap} from 'rxjs';
 import {ApiService} from './api.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Contact} from './contact-form.interface';
+import { API_TOKEN } from './api.token';
+import { IAPI } from './iapi.interface';
 
 @Injectable()
 export class StateService {
-  private _apiService = inject(ApiService);
+  private _apiService = inject(API_TOKEN);
   private _destroyRef = inject(DestroyRef);
   private _contactsSignal = signal<Contact[]>([]);  
 

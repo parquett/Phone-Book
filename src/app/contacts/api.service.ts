@@ -3,12 +3,11 @@ import { Observable, of } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 
 import {Contact} from './contact-form.interface';
+import { IAPI } from './iapi.interface';
 
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ApiService {
+@Injectable()
+export class ApiService implements IAPI{
   private _storageKey='contacts';
   private _storageKeyNextId='nextId';
 
